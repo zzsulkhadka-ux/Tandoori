@@ -1,321 +1,650 @@
 /* =============================================
-   TANDOORI — CINEMATIC FIRE ANIMATION ENGINE
+   TANDOORI — PREMIUM INTRO STYLES
    ============================================= */
 
-(function () {
-  'use strict';
+:root {
+  --black:       #050404;
+  --deep:        #0d0604;
+  --ember:       #ff4e00;
+  --fire:        #ff8c00;
+  --gold:        #e8a840;
+  --gold-light:  #f5c96a;
+  --red:         #c0290a;
+  --smoke:       rgba(180, 120, 80, 0.06);
+  --text-dim:    rgba(230, 190, 130, 0.55);
+  --text-mid:    rgba(240, 205, 150, 0.8);
+  --text-full:   #f5ddb0;
+}
 
-  /* ──────────────────────────────────────────
-     CANVAS SETUP
-  ────────────────────────────────────────── */
-  const canvas = document.getElementById('fireCanvas');
-  const ctx    = canvas.getContext('2d');
-  let W, H;
+*, *::before, *::after {
+  margin: 0; padding: 0;
+  box-sizing: border-box;
+}
 
-  function resize() {
-    W = canvas.width  = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+html, body {
+  width: 100%; height: 100%;
+  background: var(--black);
+  font-family: 'Cinzel', serif;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ==========================================
+   INTRO LAYER
+   ========================================== */
+
+#intro {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+  transition: opacity 1.2s cubic-bezier(0.76, 0, 0.24, 1),
+              transform 1.2s cubic-bezier(0.76, 0, 0.24, 1);
+}
+
+#intro.fade-out {
+  opacity: 0;
+  transform: scale(1.04);
+  pointer-events: none;
+}
+
+/* CANVAS */
+#fireCanvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+}
+
+/* HEAT VIGNETTE */
+#heat-vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    ellipse 70% 60% at 50% 80%,
+    rgba(200, 60, 5, 0.22) 0%,
+    rgba(100, 25, 5, 0.12) 40%,
+    transparent 70%
+  );
+  z-index: 1;
+  pointer-events: none;
+  animation: pulseGlow 3s ease-in-out infinite alternate;
+}
+
+@keyframes pulseGlow {
+  from { opacity: 0.7; }
+  to   { opacity: 1.0; }
+}
+
+/* FLICKER OVERLAY */
+#flicker-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 90, 10, 0.03);
+  z-index: 2;
+  pointer-events: none;
+  animation: flicker 0.12s steps(1) infinite;
+}
+
+@keyframes flicker {
+  0%   { opacity: 0; }
+  10%  { opacity: 1; }
+  20%  { opacity: 0; }
+  30%  { opacity: 0.5; }
+  50%  { opacity: 0; }
+  70%  { opacity: 0.3; }
+  100% { opacity: 0; }
+}
+
+/* ==========================================
+   SMOKE PUFFS
+   ========================================== */
+
+#smoke-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+  overflow: hidden;
+}
+
+.smoke-puff {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(160,100,60,0.12) 0%, transparent 70%);
+  animation: smokeDrift linear infinite;
+  opacity: 0;
+}
+
+.s1 { width: 280px; height: 280px; left: 10%; bottom: 20%; animation-duration: 12s; animation-delay: 0.5s; }
+.s2 { width: 200px; height: 200px; left: 35%; bottom: 15%; animation-duration: 15s; animation-delay: 2s; }
+.s3 { width: 340px; height: 340px; left: 55%; bottom: 10%; animation-duration: 18s; animation-delay: 1s; }
+.s4 { width: 180px; height: 180px; left: 75%; bottom: 25%; animation-duration: 11s; animation-delay: 3s; }
+.s5 { width: 250px; height: 250px; left: 20%; bottom: 5%;  animation-duration: 14s; animation-delay: 0s; }
+
+@keyframes smokeDrift {
+  0%   { opacity: 0;    transform: translateY(0)   scale(0.6) rotate(0deg); }
+  15%  { opacity: 0.7; }
+  80%  { opacity: 0.3; }
+  100% { opacity: 0;    transform: translateY(-55vh) scale(1.8) rotate(30deg); }
+}
+
+/* ==========================================
+   LOGO CONTAINER
+   ========================================== */
+
+#logo-container {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 14px;
+  transform: translateY(20px);
+}
+
+/* Top tagline */
+#tagline-top {
+  font-family: 'Cinzel', serif;
+  font-size: clamp(8px, 1.1vw, 11px);
+  letter-spacing: 0.35em;
+  color: var(--text-dim);
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+  text-transform: uppercase;
+}
+
+#tagline-top.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Main logo letters */
+#logo-text {
+  display: flex;
+  align-items: baseline;
+  gap: 0;
+  line-height: 1;
+}
+
+.letter {
+  display: inline-block;
+  font-family: 'Cinzel Decorative', 'Cinzel', serif;
+  font-weight: 900;
+  font-size: clamp(52px, 10vw, 120px);
+  background: linear-gradient(
+    165deg,
+    #fff5e0 0%,
+    #f5c96a 20%,
+    #e8853a 45%,
+    #c0290a 70%,
+    #7a1005 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 30px rgba(255, 120, 20, 0.7))
+          drop-shadow(0 0 60px rgba(200, 60, 5, 0.45))
+          drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  opacity: 0;
+  transform: translateY(40px) scale(0.85);
+  transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+              filter 0.6s ease;
+  will-change: transform, opacity;
+  cursor: default;
+}
+
+.letter.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.letter:hover {
+  filter: drop-shadow(0 0 40px rgba(255, 160, 30, 0.95))
+          drop-shadow(0 0 80px rgba(255, 100, 10, 0.6))
+          drop-shadow(0 2px 4px rgba(0,0,0,0.8));
+  transform: translateY(-4px) scale(1.06);
+}
+
+/* Divider */
+#divider-line {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  opacity: 0;
+  transform: scaleX(0.4);
+  transition: opacity 0.8s ease 0.1s, transform 0.8s cubic-bezier(0.22, 1, 0.36, 1) 0.1s;
+}
+
+#divider-line.visible {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+.line-seg {
+  display: block;
+  width: clamp(60px, 8vw, 120px);
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+.ornament {
+  color: var(--gold);
+  font-size: 12px;
+  filter: drop-shadow(0 0 8px var(--gold));
+  animation: ornamentPulse 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes ornamentPulse {
+  from { opacity: 0.7; filter: drop-shadow(0 0 5px var(--gold)); }
+  to   { opacity: 1.0; filter: drop-shadow(0 0 14px var(--gold-light)); }
+}
+
+/* Bottom tagline */
+#tagline-bottom {
+  font-family: 'IM Fell English SC', serif;
+  font-size: clamp(11px, 1.5vw, 15px);
+  letter-spacing: 0.2em;
+  color: var(--text-mid);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.9s ease, transform 0.9s ease;
+  font-style: italic;
+}
+
+#tagline-bottom.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ==========================================
+   ENTER BUTTON
+   ========================================== */
+
+#enter-btn-wrap {
+  position: relative;
+  z-index: 10;
+  margin-top: 54px;
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 1s ease, transform 1s ease;
+}
+
+#enter-btn-wrap.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+#enter-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: transparent;
+  border: 1px solid rgba(232, 168, 64, 0.45);
+  color: var(--gold-light);
+  font-family: 'Cinzel', serif;
+  font-size: 11px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  padding: 14px 32px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.3s, color 0.3s;
+}
+
+#enter-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(232,168,64,0.1), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s ease;
+}
+
+#enter-btn:hover::before {
+  transform: translateX(100%);
+}
+
+#enter-btn:hover {
+  border-color: var(--gold);
+  color: #fff8e8;
+  box-shadow: 0 0 24px rgba(232, 168, 64, 0.25), inset 0 0 12px rgba(232,168,64,0.05);
+}
+
+#enter-btn svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+  transition: transform 0.3s ease;
+}
+
+#enter-btn:hover svg {
+  transform: translateX(4px);
+  opacity: 1;
+}
+
+/* ==========================================
+   MAIN SITE
+   ========================================== */
+
+#main-site {
+  position: fixed;
+  inset: 0;
+  background: var(--black);
+  overflow-y: auto;
+  overflow-x: hidden;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 1.2s ease 0.3s;
+}
+
+#main-site.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* NAV */
+nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 28px 6vw;
+  border-bottom: 1px solid rgba(232, 168, 64, 0.1);
+  position: sticky;
+  top: 0;
+  background: rgba(5, 4, 4, 0.9);
+  backdrop-filter: blur(16px);
+  z-index: 100;
+}
+
+.nav-logo {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 20px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--gold-light), var(--ember));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 12px rgba(255,120,20,0.4));
+}
+
+nav ul {
+  list-style: none;
+  display: flex;
+  gap: 42px;
+}
+
+nav ul a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+nav ul a:hover { color: var(--gold-light); }
+
+.nav-cta {
+  border: 1px solid rgba(232, 168, 64, 0.4);
+  color: var(--gold);
+  text-decoration: none;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  padding: 10px 22px;
+  transition: all 0.3s ease;
+}
+
+.nav-cta:hover {
+  background: rgba(232, 168, 64, 0.1);
+  border-color: var(--gold);
+}
+
+/* HERO SECTION */
+.hero-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  align-items: center;
+  min-height: calc(100vh - 85px);
+  padding: 80px 6vw;
+  gap: 60px;
+}
+
+.hero-inner { max-width: 560px; }
+
+.hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.35em;
+  text-transform: uppercase;
+  color: var(--ember);
+  margin-bottom: 28px;
+  opacity: 0.85;
+}
+
+.hero-inner h1 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: clamp(30px, 4vw, 54px);
+  font-weight: 900;
+  color: var(--text-full);
+  line-height: 1.25;
+  margin-bottom: 28px;
+  filter: drop-shadow(0 0 20px rgba(255,120,20,0.2));
+}
+
+.hero-body {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 15px;
+  line-height: 1.85;
+  color: var(--text-mid);
+  margin-bottom: 44px;
+  font-weight: 400;
+}
+
+.hero-actions { display: flex; gap: 20px; align-items: center; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ember), var(--red));
+  color: #fff8f0;
+  text-decoration: none;
+  font-family: 'Cinzel', serif;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  padding: 16px 36px;
+  box-shadow: 0 0 30px rgba(200, 41, 10, 0.4), 0 4px 20px rgba(0,0,0,0.5);
+  transition: all 0.35s ease;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, var(--fire), var(--ember));
+  box-shadow: 0 0 50px rgba(255, 100, 0, 0.6), 0 4px 20px rgba(0,0,0,0.4);
+  transform: translateY(-2px);
+}
+
+.btn-ghost {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 10px;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+  border-bottom: 1px solid rgba(232,168,64,0.3);
+  padding-bottom: 3px;
+  transition: color 0.3s, border-color 0.3s;
+}
+
+.btn-ghost:hover { color: var(--gold); border-color: var(--gold); }
+
+/* HERO ILLUSTRATION */
+.hero-image-col {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.tandoor-illustration {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 320px;
+  height: 380px;
+}
+
+.clay-oven {
+  position: relative;
+  width: 200px;
+  height: 260px;
+  background: radial-gradient(ellipse at 30% 30%, #5a3520, #2a1508);
+  border-radius: 50% 50% 12% 12% / 40% 40% 8% 8%;
+  box-shadow:
+    inset -20px -20px 40px rgba(0,0,0,0.6),
+    inset 10px 10px 30px rgba(180,80,20,0.2),
+    0 0 60px rgba(200,60,5,0.35),
+    0 0 120px rgba(200,60,5,0.15);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.oven-glow {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 280px;
+  height: 280px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,100,10,0.18), transparent 65%);
+  animation: ovenBreath 2.5s ease-in-out infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes ovenBreath {
+  from { transform: translateX(-50%) scale(0.9); opacity: 0.7; }
+  to   { transform: translateX(-50%) scale(1.1); opacity: 1; }
+}
+
+.oven-mouth {
+  width: 90px;
+  height: 55px;
+  background: radial-gradient(ellipse, #ff5500 0%, #cc2200 40%, #330800 100%);
+  border-radius: 50% 50% 0 0;
+  margin-top: 55px;
+  box-shadow: 0 0 40px rgba(255,80,0,0.8), 0 0 80px rgba(200,40,0,0.5);
+  animation: mouthPulse 1.2s ease-in-out infinite alternate;
+}
+
+@keyframes mouthPulse {
+  from { box-shadow: 0 0 40px rgba(255,80,0,0.8), 0 0 80px rgba(200,40,0,0.5); }
+  to   { box-shadow: 0 0 60px rgba(255,120,0,1.0), 0 0 100px rgba(255,60,0,0.7); }
+}
+
+.oven-fire {
+  position: absolute;
+  top: 72px;
+  display: flex;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.flame {
+  border-radius: 50% 50% 30% 30%;
+  transform-origin: bottom center;
+  animation: flameWave ease-in-out infinite alternate;
+}
+
+.f1 {
+  width: 20px; height: 36px;
+  background: linear-gradient(to top, #ff4400, #ff9900, #ffe066);
+  animation-duration: 0.7s;
+  animation-delay: 0.1s;
+}
+.f2 {
+  width: 28px; height: 50px;
+  background: linear-gradient(to top, #ff3300, #ff8800, #ffcc44);
+  animation-duration: 0.5s;
+}
+.f3 {
+  width: 18px; height: 30px;
+  background: linear-gradient(to top, #ff5500, #ffaa00, #fff0aa);
+  animation-duration: 0.8s;
+  animation-delay: 0.2s;
+}
+
+@keyframes flameWave {
+  from { transform: scaleX(1)   scaleY(1)   rotate(-4deg); }
+  to   { transform: scaleX(0.8) scaleY(1.15) rotate(4deg); }
+}
+
+/* FEATURES */
+.features-section {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  border-top: 1px solid rgba(232,168,64,0.1);
+  background: rgba(232,168,64,0.06);
+}
+
+.feature-card {
+  background: var(--deep);
+  padding: 60px 48px;
+  transition: background 0.4s;
+}
+
+.feature-card:hover {
+  background: rgba(15, 7, 3, 0.9);
+}
+
+.feature-icon {
+  font-size: 28px;
+  margin-bottom: 22px;
+  filter: drop-shadow(0 0 12px rgba(255,120,20,0.5));
+}
+
+.feature-card h3 {
+  font-family: 'Cinzel Decorative', serif;
+  font-size: 14px;
+  color: var(--gold-light);
+  margin-bottom: 16px;
+  letter-spacing: 0.05em;
+}
+
+.feature-card p {
+  font-family: 'IM Fell English SC', serif;
+  font-size: 13px;
+  line-height: 1.8;
+  color: var(--text-dim);
+}
+
+/* ==========================================
+   RESPONSIVE
+   ========================================== */
+
+@media (max-width: 900px) {
+  .hero-section {
+    grid-template-columns: 1fr;
+    padding: 60px 6vw;
+    text-align: center;
   }
-  resize();
-  window.addEventListener('resize', resize);
+  .hero-image-col { display: none; }
+  .hero-actions { justify-content: center; }
+  .features-section { grid-template-columns: 1fr; }
+  nav ul { display: none; }
+  .letter { font-size: clamp(38px, 11vw, 80px); }
+}
 
-  /* ──────────────────────────────────────────
-     PARTICLE POOL
-  ────────────────────────────────────────── */
-  const POOL_SIZE  = 320;
-  const particles  = [];
-
-  function rand(min, max) { return Math.random() * (max - min) + min; }
-
-  class Particle {
-    constructor() { this.reset(true); }
-
-    reset(initial = false) {
-      this.x     = rand(W * 0.2, W * 0.8);
-      this.y     = initial ? rand(H * 0.3, H + 60) : H + rand(10, 60);
-      this.vx    = rand(-0.6, 0.6);
-      this.vy    = rand(-1.8, -0.6);
-      this.life  = 0;
-      this.maxLife = rand(90, 220);
-      this.size  = rand(1.2, 5.5);
-      this.type  = Math.random();   // < 0.25 = ember, < 0.55 = spark, else = smoke
-      this.angle = rand(0, Math.PI * 2);
-      this.spin  = rand(-0.04, 0.04);
-      this.alpha = 0;
-    }
-
-    update() {
-      this.life++;
-      const t = this.life / this.maxLife;
-
-      // Physics
-      this.vx += rand(-0.08, 0.08);
-      this.x  += this.vx;
-      this.y  += this.vy;
-      this.angle += this.spin;
-
-      if (this.type < 0.55) {
-        // Ember / spark — rise with slight turbulence
-        this.vy  -= 0.012;
-        this.size = Math.max(0.3, this.size - 0.018);
-        this.alpha = t < 0.15
-          ? t / 0.15
-          : t > 0.75
-            ? (1 - t) / 0.25
-            : 1;
-      } else {
-        // Smoke — expand and fade
-        this.size += 0.35;
-        this.vy  += 0.005;
-        this.alpha = t < 0.1
-          ? t / 0.1 * 0.35
-          : t > 0.55
-            ? (1 - t) / 0.45 * 0.35
-            : 0.35;
-      }
-
-      if (this.life >= this.maxLife || this.y < -80 || this.x < -80 || this.x > W + 80) {
-        this.reset();
-      }
-    }
-
-    draw() {
-      if (this.alpha <= 0) return;
-      ctx.save();
-      ctx.globalAlpha = this.alpha;
-      ctx.translate(this.x, this.y);
-      ctx.rotate(this.angle);
-
-      if (this.type < 0.25) {
-        // Ember — glowing dot with halo
-        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size * 3.5);
-        g.addColorStop(0,   `rgba(255, 240, 180, ${this.alpha})`);
-        g.addColorStop(0.3, `rgba(255, 160, 30,  ${this.alpha * 0.8})`);
-        g.addColorStop(0.7, `rgba(220, 60, 5,    ${this.alpha * 0.3})`);
-        g.addColorStop(1,   'rgba(0,0,0,0)');
-        ctx.beginPath();
-        ctx.arc(0, 0, this.size * 3.5, 0, Math.PI * 2);
-        ctx.fillStyle = g;
-        ctx.fill();
-
-      } else if (this.type < 0.55) {
-        // Spark — thin elongated streak
-        ctx.beginPath();
-        ctx.moveTo(0, -this.size * 2);
-        ctx.lineTo(0, this.size * 2);
-        ctx.strokeStyle = `rgba(255, 200, 80, ${this.alpha})`;
-        ctx.lineWidth = Math.max(0.4, this.size * 0.4);
-        ctx.lineCap = 'round';
-        ctx.stroke();
-
-      } else {
-        // Smoke puff
-        const g = ctx.createRadialGradient(0, 0, 0, 0, 0, this.size);
-        g.addColorStop(0, `rgba(120, 60, 20, ${this.alpha * 0.9})`);
-        g.addColorStop(0.6, `rgba(60, 25, 8,  ${this.alpha * 0.4})`);
-        g.addColorStop(1,   'rgba(0,0,0,0)');
-        ctx.beginPath();
-        ctx.arc(0, 0, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = g;
-        ctx.fill();
-      }
-
-      ctx.restore();
-    }
-  }
-
-  // Spawn pool
-  for (let i = 0; i < POOL_SIZE; i++) {
-    particles.push(new Particle());
-  }
-
-  /* ──────────────────────────────────────────
-     FIRE BASE COLUMNS
-  ────────────────────────────────────────── */
-  const fireColumns = 6;
-  const fireSeeds = Array.from({ length: fireColumns }, (_, i) => ({
-    x:      W * (0.15 + i * 0.14),
-    phase:  rand(0, Math.PI * 2),
-    speed:  rand(1.2, 2.5),
-    height: rand(140, 280),
-  }));
-
-  function drawFireBase(time) {
-    fireSeeds.forEach(seed => {
-      seed.x = W * (0.15 + fireSeeds.indexOf(seed) * 0.14); // reflow on resize
-      const flicker = Math.sin(time * seed.speed + seed.phase) * 0.25 + 0.75;
-      const bh = seed.height * flicker;
-
-      for (let step = 0; step < 12; step++) {
-        const frac = step / 12;
-        const yPos = H - frac * bh;
-        const r = seed.height * 0.12 * (1 - frac);
-        const a = (1 - frac) * 0.12 * flicker;
-        if (a < 0.01) continue;
-
-        const g = ctx.createRadialGradient(seed.x, yPos, 0, seed.x, yPos, r * 2.5);
-        g.addColorStop(0,   `rgba(255, 160, 30, ${a})`);
-        g.addColorStop(0.4, `rgba(200,  60,  5, ${a * 0.6})`);
-        g.addColorStop(1,   'rgba(0,0,0,0)');
-        ctx.beginPath();
-        ctx.arc(seed.x, yPos, r * 2.5, 0, Math.PI * 2);
-        ctx.fillStyle = g;
-        ctx.fill();
-      }
-    });
-  }
-
-  /* ──────────────────────────────────────────
-     AMBIENT EMBER GLOW (bottom)
-  ────────────────────────────────────────── */
-  function drawAmbientGlow(time) {
-    const pulse = Math.sin(time * 0.8) * 0.12 + 0.88;
-    const g = ctx.createRadialGradient(W * 0.5, H * 1.1, 0, W * 0.5, H * 1.1, H * 0.7);
-    g.addColorStop(0,   `rgba(200, 50, 5, ${0.28 * pulse})`);
-    g.addColorStop(0.35,`rgba(120, 25, 3, ${0.14 * pulse})`);
-    g.addColorStop(1,   'rgba(0,0,0,0)');
-    ctx.fillStyle = g;
-    ctx.fillRect(0, 0, W, H);
-  }
-
-  /* ──────────────────────────────────────────
-     MAIN RENDER LOOP
-  ────────────────────────────────────────── */
-  let startTime = null;
-  let running   = true;
-
-  function loop(ts) {
-    if (!running) return;
-    requestAnimationFrame(loop);
-
-    if (!startTime) startTime = ts;
-    const time = (ts - startTime) / 1000;
-
-    // Clear
-    ctx.clearRect(0, 0, W, H);
-
-    // Fade-in particles after 0.5s
-    const globalAlpha = Math.min(1, Math.max(0, (time - 0.5) / 2));
-    ctx.globalAlpha = globalAlpha;
-
-    drawAmbientGlow(time);
-    drawFireBase(time);
-    particles.forEach(p => { p.update(); p.draw(); });
-
-    ctx.globalAlpha = 1;
-  }
-
-  requestAnimationFrame(loop);
-
-  /* ──────────────────────────────────────────
-     SEQUENCE ORCHESTRATION
-  ────────────────────────────────────────── */
-  const letters     = document.querySelectorAll('.letter');
-  const taglineTop  = document.getElementById('tagline-top');
-  const taglineBot  = document.getElementById('tagline-bottom');
-  const divider     = document.getElementById('divider-line');
-  const enterWrap   = document.getElementById('enter-btn-wrap');
-
-  function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-  async function runIntroSequence() {
-    // Phase 1: Fire builds up silently — 1.2s
-    await delay(1200);
-
-    // Phase 2: Top tagline fades in
-    taglineTop.classList.add('visible');
-    await delay(600);
-
-    // Phase 3: Letters appear one by one with stagger
-    for (let i = 0; i < letters.length; i++) {
-      await delay(i === 0 ? 0 : 75);
-      letters[i].classList.add('visible');
-    }
-    await delay(300);
-
-    // Phase 4: Divider expands
-    divider.classList.add('visible');
-    await delay(400);
-
-    // Phase 5: Bottom tagline
-    taglineBot.classList.add('visible');
-    await delay(500);
-
-    // Phase 6: Enter button
-    enterWrap.classList.add('visible');
-  }
-
-  runIntroSequence();
-
-  /* ──────────────────────────────────────────
-     LETTER INTERACTION — Burst on hover
-  ────────────────────────────────────────── */
-  letters.forEach(letter => {
-    letter.addEventListener('mouseenter', function () {
-      const rect   = this.getBoundingClientRect();
-      const cx     = rect.left + rect.width / 2;
-      const cy     = rect.top  + rect.height / 2;
-      spawnBurst(cx, cy, 18);
-    });
-  });
-
-  function spawnBurst(x, y, count) {
-    let spawned = 0;
-    for (const p of particles) {
-      if (p.life > p.maxLife * 0.9 || p.life < 2) {
-        p.x       = x + rand(-20, 20);
-        p.y       = y + rand(-10, 10);
-        p.vx      = rand(-2.5, 2.5);
-        p.vy      = rand(-3.5, -1.0);
-        p.life    = 0;
-        p.maxLife = rand(40, 80);
-        p.size    = rand(2, 5);
-        p.type    = Math.random() * 0.5; // ember or spark only
-        p.alpha   = 0;
-        spawned++;
-        if (spawned >= count) break;
-      }
-    }
-  }
-
-  /* ──────────────────────────────────────────
-     ENTER BUTTON HANDLER
-  ────────────────────────────────────────── */
-  window.enterSite = function () {
-    const intro = document.getElementById('intro');
-    const main  = document.getElementById('main-site');
-
-    intro.classList.add('fade-out');
-
-    setTimeout(() => {
-      intro.style.display = 'none';
-      main.classList.add('visible');
-      document.body.style.overflow = 'auto';
-      running = false; // stop canvas loop (performance)
-    }, 1300);
-  };
-
-  /* ──────────────────────────────────────────
-     MOUSE PARALLAX ON INTRO
-  ────────────────────────────────────────── */
-  const logoCont = document.getElementById('logo-container');
-  let mouseX = 0, mouseY = 0;
-
-  document.addEventListener('mousemove', e => {
-    mouseX = (e.clientX / window.innerWidth  - 0.5) * 2;
-    mouseY = (e.clientY / window.innerHeight - 0.5) * 2;
-  });
-
-  (function parallaxLoop() {
-    if (!running) return;
-    requestAnimationFrame(parallaxLoop);
-    logoCont.style.transform = `
-      translateY(20px)
-      rotateX(${-mouseY * 4}deg)
-      rotateY(${mouseX * 5}deg)
-      translateZ(0)
-    `;
-    logoCont.style.perspective = '800px';
-  })();
-
-})();
+@media (max-width: 480px) {
+  .letter { font-size: 9.5vw; }
+  #tagline-top { font-size: 8px; letter-spacing: 0.2em; }
+     }
