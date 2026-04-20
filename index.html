@@ -1,43 +1,121 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tandoori</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.161.0/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tandoori</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@700;900&family=Cinzel:wght@400;600&family=IM+Fell+English+SC&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
 
-    <canvas id="bg-canvas"></canvas>
+  <!-- INTRO OVERLAY -->
+  <div id="intro">
+    <canvas id="fireCanvas"></canvas>
 
-    <main>
-        <section class="hero">
-            <div class="content">
-                <h1>TANDOORI</h1>
-                <p>The Art of Charcoal & Clay</p>
-                <button>Explore Menu</button>
+    <div id="smoke-layer">
+      <div class="smoke-puff s1"></div>
+      <div class="smoke-puff s2"></div>
+      <div class="smoke-puff s3"></div>
+      <div class="smoke-puff s4"></div>
+      <div class="smoke-puff s5"></div>
+    </div>
+
+    <div id="logo-container">
+      <div id="tagline-top">EST. 1987 &nbsp;·&nbsp; AUTHENTIC FIRE CUISINE</div>
+      <div id="logo-text">
+        <span class="letter" data-char="T">T</span>
+        <span class="letter" data-char="a">a</span>
+        <span class="letter" data-char="n">n</span>
+        <span class="letter" data-char="d">d</span>
+        <span class="letter" data-char="o">o</span>
+        <span class="letter" data-char="o2">o</span>
+        <span class="letter" data-char="r">r</span>
+        <span class="letter" data-char="i">i</span>
+      </div>
+      <div id="divider-line">
+        <span class="line-seg"></span>
+        <span class="ornament">✦</span>
+        <span class="line-seg"></span>
+      </div>
+      <div id="tagline-bottom">Where Flame Meets Flavour</div>
+    </div>
+
+    <div id="enter-btn-wrap">
+      <button id="enter-btn" onclick="enterSite()">
+        <span>Enter</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M5 12h14M13 6l6 6-6 6"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="heat-vignette"></div>
+    <div id="flicker-overlay"></div>
+  </div>
+
+  <!-- MAIN SITE (revealed after intro) -->
+  <main id="main-site">
+    <nav>
+      <div class="nav-logo">Tandoori</div>
+      <ul>
+        <li><a href="#">Menu</a></li>
+        <li><a href="#">Story</a></li>
+        <li><a href="#">Reserve</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+      <a href="#" class="nav-cta">Book a Table</a>
+    </nav>
+
+    <section class="hero-section">
+      <div class="hero-inner">
+        <p class="hero-eyebrow">A Culinary Journey Through Fire</p>
+        <h1>Crafted in Flame.<br>Born in Tradition.</h1>
+        <p class="hero-body">
+          Every dish at Tandoori is a ritual — slow-fired at 900°C in our hand-built clay ovens, 
+          seasoned with spices sourced from origin. This is not dining. This is a ceremony.
+        </p>
+        <div class="hero-actions">
+          <a href="#" class="btn-primary">View Menu</a>
+          <a href="#" class="btn-ghost">Our Story</a>
+        </div>
+      </div>
+      <div class="hero-image-col">
+        <div class="tandoor-illustration">
+          <div class="clay-oven">
+            <div class="oven-glow"></div>
+            <div class="oven-mouth"></div>
+            <div class="oven-fire">
+              <div class="flame f1"></div>
+              <div class="flame f2"></div>
+              <div class="flame f3"></div>
             </div>
-        </section>
+          </div>
+        </div>
+      </div>
+    </section>
 
-        <section class="about">
-            <div class="content">
-                <h2>Ancient Traditions</h2>
-                <p>Our Tandoor ovens are hand-crafted from Himalayan clay, firing at 900°F to lock in flavors that modern ovens can't touch.</p>
-            </div>
-        </section>
+    <section class="features-section">
+      <div class="feature-card">
+        <div class="feature-icon">🔥</div>
+        <h3>900°C Clay Oven</h3>
+        <p>Our traditional tandoor reaches extreme heat, locking in smoky flavour and perfectly charred texture.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🌿</div>
+        <h3>Origin Spices</h3>
+        <p>Every spice is sourced directly from Rajasthan, Kashmir, and Kerala farms — never blended, always whole.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✦</div>
+        <h3>Master Chefs</h3>
+        <p>Our pit masters carry 30 years of ancestral technique, refined in the kitchens of Jaipur's royal courts.</p>
+      </div>
+    </section>
+  </main>
 
-        <section class="menu">
-            <div class="content">
-                <h2>The Sizzle</h2>
-                <p>From succulent Tikka to buttery Naan, every dish carries the soul of the fire.</p>
-                <button>Book a Table</button>
-            </div>
-        </section>
-    </main>
-
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
